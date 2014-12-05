@@ -1,6 +1,5 @@
 package com.noa.utilities;
 
-import java.util.ArrayList;
 import java.util.Enumeration;
 
 /**
@@ -14,8 +13,7 @@ public class StringYokenizer implements Enumeration<Object> {
     private int maxPosition;
     private int posTokens;
     private int posActToken;
-    private String nueva;
-    private ArrayList<String> tokens = new ArrayList<>();
+    private String strToValidate;
 
     /**
      * Contructor de la clase, esta clase sirve para manejar token por palabras
@@ -24,43 +22,33 @@ public class StringYokenizer implements Enumeration<Object> {
      * @param str es la String que se desea evaluar
      * @param delim es el delimitador del cual dependen los tokens pueden ser
      * palabras
-     * 
+     *
      */
     public StringYokenizer(String str, String delim) {
+
         this.str = str;
         this.delim = delim;
         maxPosition = str.length();
         posActToken = 0;
         posTokens = 0;
-        nueva = str;
-        initTokens();
-    }
-
-    /**
-     * Agrega totos los tokens que tenga la cadena a evaluar dentro del array de tokens
-     */
-    private void initTokens() {
-        while (nueva.contains(delim)) {
-            int currentMaxPosicion = nueva.length();
-            if (posTokens < currentMaxPosicion) {
-                nueva = nueva.substring(scanToken(posTokens), currentMaxPosicion);
-                tokens.add(nueva);
-            }
-        }
+        strToValidate = str;
     }
 
     /**
      * Este metodo escanea la cadena en busca de tokens
      *
      * @param startPos posicion desde la que se quiere escanear los tokens
+     * @param str cadena que se evaluara
      * @return int con la posicion despues del token
      */
-    private int scanToken(int startPos) {
-        int currentMaxPosicion = nueva.length();
+    private int scanToken(int startPos, String str) {
+
+        String lstr = str;
+        int currentMaxPosicion = lstr.length();
         if (startPos < currentMaxPosicion) {
-            nueva = nueva.substring(startPos, currentMaxPosicion);
-            if (nueva.contains(delim)) {
-                return nueva.indexOf(delim) + delim.length();
+            lstr = lstr.substring(startPos, currentMaxPosicion);
+            if (lstr.contains(delim)) {
+                return lstr.indexOf(delim) + delim.length();
             }
         }
         return -1;
@@ -72,7 +60,17 @@ public class StringYokenizer implements Enumeration<Object> {
      * @return int con la cantidad de tokens
      */
     public int countTokens() {
-        return (tokens.size() - posActToken);
+
+        String lstrToValidate = strToValidate;
+        int result = 0;
+        while (lstrToValidate.contains(delim)) {
+            int currentMaxPosicion = lstrToValidate.length();
+            if (posTokens < currentMaxPosicion) {
+                lstrToValidate = lstrToValidate.substring(scanToken(posTokens, lstrToValidate), currentMaxPosicion);
+                result++;
+            }
+        }
+        return result;
     }
 
     /**
@@ -81,10 +79,11 @@ public class StringYokenizer implements Enumeration<Object> {
      * @return String que es el nuevo token
      */
     public String nextToken() {
-        if (posActToken < tokens.size()) {
-            String resp = tokens.get(posActToken);
-            posActToken++;
-            return resp;
+
+        if (posActToken < strToValidate.length()) {
+            posActToken = scanToken(0, strToValidate);
+            strToValidate = strToValidate.substring(posActToken, strToValidate.length());
+            return strToValidate;
         }
         return null;
     }
@@ -95,24 +94,29 @@ public class StringYokenizer implements Enumeration<Object> {
      * @return true si encuentra mas tokens
      */
     public boolean hasMoreTokens() {
-        return (tokens.size() - posActToken != 0);
+
+        return (strToValidate.length() - posActToken > 0);
     }
 
     /**
      * Este metodo verifica si existen mas elementos o tokens en la cadena
+     *
      * @return true si encuentra mas tokens
      */
     @Override
     public boolean hasMoreElements() {
+
         return hasMoreTokens();
     }
 
     /**
      * Este metodo obtiene el siguiente token
+     *
      * @return Object del siguiente token
      */
     @Override
     public Object nextElement() {
+
         return nextToken();
     }
 }
