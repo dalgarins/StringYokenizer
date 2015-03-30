@@ -13,6 +13,7 @@ public class StringYokenizer implements Enumeration<Object> {
     private int maxPosition;
     private int posTokens;
     private int posActToken;
+    private int posInStr;
     private String strToValidate;
 
     /**
@@ -31,7 +32,8 @@ public class StringYokenizer implements Enumeration<Object> {
         maxPosition = str.length();
         posActToken = 0;
         posTokens = 0;
-        strToValidate = str;
+        posInStr = 0;
+        strToValidate = str.concat(delim);//para solucionar el problema del ultimo token
     }
 
     /**
@@ -64,11 +66,8 @@ public class StringYokenizer implements Enumeration<Object> {
         String lstrToValidate = strToValidate;
         int result = 0;
         while (lstrToValidate.contains(delim)) {
-            int currentMaxPosicion = lstrToValidate.length();
-            if (posTokens < currentMaxPosicion) {
-                lstrToValidate = lstrToValidate.substring(scanToken(posTokens, lstrToValidate), currentMaxPosicion);
-                result++;
-            }
+            lstrToValidate = lstrToValidate.substring(scanToken(0, lstrToValidate), lstrToValidate.length());
+            result++;
         }
         return result;
     }
@@ -80,10 +79,13 @@ public class StringYokenizer implements Enumeration<Object> {
      */
     public String nextToken() {
 
-        if (posActToken < strToValidate.length()) {
-            posActToken = scanToken(0, strToValidate);
-            strToValidate = strToValidate.substring(posActToken, strToValidate.length());
-            return strToValidate;
+        int posToken;
+        String response;
+        if (strToValidate.contains(delim)) {
+            posToken = scanToken(posTokens, strToValidate);
+            response = strToValidate.substring(0, posToken);
+            strToValidate = strToValidate.substring(posToken);
+            return response.replace(delim, "");
         }
         return null;
     }
@@ -95,7 +97,7 @@ public class StringYokenizer implements Enumeration<Object> {
      */
     public boolean hasMoreTokens() {
 
-        return (strToValidate.length() - posActToken > 0);
+        return (strToValidate.contains(delim) && !strToValidate.equals(delim));
     }
 
     /**
