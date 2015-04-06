@@ -81,13 +81,25 @@ public class StringYokenizer implements Enumeration<Object> {
 
         int posToken;
         String response;
-        if (strToValidate.contains(delim)) {
-            posToken = scanToken(posTokens, strToValidate);
-            response = strToValidate.substring(0, posToken);
-            strToValidate = strToValidate.substring(posToken);
-            return response.replace(delim, "");
+
+        posToken = scanToken(posTokens, strToValidate);
+        response = strToValidate.substring(0, posToken - delim.length());
+        strToValidate = strToValidate.substring(posToken);
+        
+        return response;
+    }
+
+    /**
+     * Elimina los tokens vacios de la cadena
+     */
+    private void cleanEmptyTokens() {
+
+        if (strToValidate.length() >= delim.length()) {
+            if (strToValidate.subSequence(0, delim.length()).equals(delim)) {
+                strToValidate = strToValidate.substring(delim.length());
+                cleanEmptyTokens();
+            }
         }
-        return null;
     }
 
     /**
@@ -97,6 +109,7 @@ public class StringYokenizer implements Enumeration<Object> {
      */
     public boolean hasMoreTokens() {
 
+        cleanEmptyTokens();
         return (strToValidate.contains(delim) && !strToValidate.equals(delim));
     }
 

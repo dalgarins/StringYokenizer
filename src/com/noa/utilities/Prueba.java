@@ -18,16 +18,14 @@ public class Prueba {
      */
     public static void main(String[] args) {
         
-        String str = "hdog<div>ghfhfg<<<ghhdhdfhd<div>ghfhfghfg<div>nmbmn<div>";
+        String str = "hdog<div>ghfhfg<<<ghhdhdfhd<div>ghfhfghfg<div>nmbmn<div><div><div>";
         String delim = "<div>";
         
         StringYokenizer syk = new StringYokenizer(str, delim);
         
         while (syk.hasMoreTokens()) {            
             System.out.println(syk.nextToken());
-        }
-        
-        
+        }      
     }
     
 }
